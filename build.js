@@ -4,6 +4,7 @@ var fs = require('fs');
 var http = require('http');
 var htmlMinifier = require('html-minifier');
 var uglifyJs = require('uglify-js');
+var strftime = require('strftime');
 console.log('Get packages.json')
 var packagesurl = 'https://s3.amazonaws.com/cdnjs-artifacts/packages.json?' + new Date().getTime();
 console.log(packagesurl);
@@ -12,12 +13,12 @@ superagent.get(packagesurl, function(res, textStatus, xhr){
   var packages = res.body.packages;
   var indexTemplate = fs.readFileSync('index.template', 'utf8');
   var homeTemplate = fs.readFileSync('home.template.html', 'utf8');
-  var homePage = _.template(homeTemplate, {packages: packages});
+  var homePage = _.template(homeTemplate, {packages: packages, strftime: strftime});
   var indexPage = _.template(indexTemplate, {page: homePage});
   var htmlCompressionOptions = {
-  	removeComments: true,
-  	collapseBooleanAttributes: true,
-  	collapseWhitespace: true,
+        removeComments: true,
+        collapseBooleanAttributes: true,
+        collapseWhitespace: true,
   };
 
   indexPage = htmlMinifier.minify(indexPage, htmlCompressionOptions);
